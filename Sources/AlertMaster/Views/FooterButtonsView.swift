@@ -46,6 +46,27 @@ public class FooterButtonsView: UIView {
 // MARK: - Public methods
 public extension FooterButtonsView {
     
+    func addCustomGroups(_ groups: [AlertButtonsGroup]) {
+        groups.forEach({ group in
+            switch group.position {
+            case .horizontal:
+                createNewHorizontalStack()
+                group.buttons.forEach({ button in
+                    if let lastHorizontalStack = mainStackView.arrangedSubviews.last as? UIStackView {
+                        lastHorizontalStack.addArrangedSubview(button)
+                    }
+                })
+            case .vertical:
+                createNewVerticalStack()
+                group.buttons.forEach({ button in
+                    if let lastHorizontalStack = mainStackView.arrangedSubviews.last as? UIStackView {
+                        lastHorizontalStack.addArrangedSubview(button)
+                    }
+                })
+            }
+        })
+    }
+    
     func addCustomButton(_ button: UIButton, position: ButtonPosition) {
         switch position {
         case .horizontal:
@@ -91,6 +112,18 @@ private extension FooterButtonsView {
         horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
         horizontalStackView.axis = .horizontal
         horizontalStackView.spacing = buttonsConfig.horizontalGridSpacing
+        horizontalStackView.alignment = .fill
+        horizontalStackView.distribution = .fillEqually
+        
+        mainStackView.addArrangedSubview(horizontalStackView)
+    }
+    
+    func createNewVerticalStack() {
+        let horizontalStackView = UIStackView()
+        
+        horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
+        horizontalStackView.axis = .vertical
+        horizontalStackView.spacing = buttonsConfig.verticalGridSpacing
         horizontalStackView.alignment = .fill
         horizontalStackView.distribution = .fillEqually
         

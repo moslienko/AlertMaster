@@ -18,7 +18,7 @@ public struct AlertContainerConfig {
     public init(
         backgroundColor: UIColor = .white,
         cornerRadius: CGFloat = 15,
-        componentsInsets: UIEdgeInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: -16.0),
+        componentsInsets: UIEdgeInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: -16.0, right: -16.0),
         componentsSpacing: CGFloat = 8.0
     ) {
         self.backgroundColor = backgroundColor
