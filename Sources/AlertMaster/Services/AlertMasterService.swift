@@ -10,20 +10,36 @@ import UIKit
 
 public class AlertMasterService {
     
-    var components: [AlertComponents]
-    var buttons: [AlertActionButton]
-    
-    #warning("add to config")
-    /*
-     var isShowCloseButton: Bool
-     var backgroundImage: UIImage?
-     */
+    public var components: [AlertComponents]
+    public var buttonsLayout: ButtonLayout
+    public var didDismissButtonTapped: (() -> Void)?
+
+    private let screen = AlertScreenViewController()
     
     public init(
         components: [AlertComponents],
-        buttons: [AlertActionButton]
+        buttonsLayout: ButtonLayout
     ) {
         self.components = components
-        self.buttons = buttons
+        self.buttonsLayout = buttonsLayout
+    }
+    
+    public func show(in controller: UIViewController, with config: AlertConfig) {
+        screen.model = AlertScreenViewModel(alert: self, config: config)
+        screen.model?.didDismissButtonTapped = {
+            self.didDismissButtonTapped?()
+        }
+        screen.modalPresentationStyle = .overFullScreen
+        
+        DispatchQueue.main.async {
+            controller.present(self.screen, animated: true)
+        }
+    }
+    
+    public func dismiss(finished: (() -> Void)? = nil) {
+        screen.hideView {
+            self.screen.dismiss(animated: false, completion: nil)
+            finished?()
+        }
     }
 }
