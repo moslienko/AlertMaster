@@ -29,7 +29,7 @@ public struct AlertCloseButtonConfig {
     }
     
     public init(
-        icon: UIImage = defaultIcon ?? UIImage(),
+        icon: UIImage = AlertCloseButtonConfig.defaultIcon ?? UIImage(),
         size: CGSize = CGSize(width: 44.0, height: 44.0),
         position: Position = .right(inset: PositionInset(top: 16.0, side: 16.0))
     ) {
@@ -38,7 +38,7 @@ public struct AlertCloseButtonConfig {
         self.position = position
     }
     
-    private var defaultIcon: UIImage? {
+    public static var defaultIcon: UIImage? {
         if #available(iOS 13.0, *) {
             return UIImage(systemName: "close")
         } else {

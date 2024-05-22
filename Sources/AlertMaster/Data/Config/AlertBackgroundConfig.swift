@@ -17,7 +17,7 @@ public struct AlertBackgroundConfig {
     public init(
         isNeedBlur: Bool = false,
         blurStyle: UIBlurEffect.Style = .regular,
-        backgroundColor: UIColor
+        backgroundColor: UIColor = .black.withAlphaComponent(0.5)
     ) {
         self.isNeedBlur = isNeedBlur
         self.blurStyle = blurStyle

@@ -9,6 +9,8 @@ import UIKit
 
 public class FooterButtonsView: UIView {
     
+    var buttonsConfig = AlertButtonsConfig()
+    
     // MARK: - Private properties
     private lazy var mainStackView: UIStackView = {
         let stackView = UIStackView()
@@ -16,18 +18,26 @@ public class FooterButtonsView: UIView {
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.distribution = .fill
-        stackView.spacing = 10
+        stackView.spacing = buttonsConfig.verticalGridSpacing
         
         return stackView
     }()
     
     // MARK: - Initialization
     override init(frame: CGRect) {
+        self.buttonsConfig = AlertButtonsConfig()
+        super.init(frame: frame)
+        setupView()
+    }
+    
+    init(frame: CGRect, buttonsConfig: AlertButtonsConfig) {
+        self.buttonsConfig = buttonsConfig
         super.init(frame: frame)
         setupView()
     }
     
     required init?(coder: NSCoder) {
+        self.buttonsConfig = AlertButtonsConfig()
         super.init(coder: coder)
         setupView()
     }
@@ -40,7 +50,7 @@ public extension FooterButtonsView {
         switch position {
         case .horizontal:
             if let lastHorizontalStack = mainStackView.arrangedSubviews.last as? UIStackView,
-               lastHorizontalStack.arrangedSubviews.count == 2 {
+               lastHorizontalStack.arrangedSubviews.count == buttonsConfig.countButtonsInOneRow {
                 createNewHorizontalStack()
             }
             
@@ -80,7 +90,7 @@ private extension FooterButtonsView {
         
         horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
         horizontalStackView.axis = .horizontal
-        horizontalStackView.spacing = 10
+        horizontalStackView.spacing = buttonsConfig.horizontalGridSpacing
         horizontalStackView.alignment = .fill
         horizontalStackView.distribution = .fillEqually
         
