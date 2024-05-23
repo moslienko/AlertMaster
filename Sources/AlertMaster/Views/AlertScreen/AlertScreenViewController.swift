@@ -61,6 +61,7 @@ public class AlertScreenViewController: UIViewController {
     }()
     
     // MARK: - Constraints
+    private var constraints = [NSLayoutConstraint]()
     private var closeButtonTopConstraint: NSLayoutConstraint?
     private var closeButtonSideConstraint: NSLayoutConstraint?
     private var contentStackViewHeightConstraint: NSLayoutConstraint?
@@ -85,6 +86,16 @@ public class AlertScreenViewController: UIViewController {
     public override func viewDidLoad() {
         self.setupInitialState()
         self.setupView()
+    }
+    
+    public override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.willTransition(to: newCollection, with: coordinator)
+        
+        coordinator.animate(alongsideTransition: { (context) in
+            self.viewDidLoad()
+            self.containerView.alpha = 1.0
+            self.alertView.alpha = 1
+        })
     }
 }
 
@@ -132,6 +143,10 @@ private extension AlertScreenViewController {
             return
         }
         
+        view.subviews.forEach({ $0.removeFromSuperview() })
+        NSLayoutConstraint.deactivate(constraints)
+        constraints = []
+        
         view.addSubview(blurView)
         view.addSubview(containerView)
         containerView.addSubview(alertView)
@@ -140,7 +155,7 @@ private extension AlertScreenViewController {
         
         blurView.isHidden = !model.config.backgroundConfig.isNeedBlur
         closeButton.isHidden = !model.config.closeButtonConfig.isShowCloseButton
-        
+        print("setupConstaints - \(self.view)")
         let closeBtnPosition = model.config.closeButtonConfig.position
         switch closeBtnPosition {
         case let .left(inset):
@@ -160,7 +175,7 @@ private extension AlertScreenViewController {
             return
         }
         
-        NSLayoutConstraint.activate([
+        constraints += [
             blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             blurView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -173,9 +188,9 @@ private extension AlertScreenViewController {
             
             alertView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             alertView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            alertView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            alertView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            
+            alertView.leadingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.leadingAnchor, constant: model.config.containerConfig.containerInsets.left),
+            alertView.trailingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.trailingAnchor, constant: model.config.containerConfig.containerInsets.right),
+
             contentStackView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: model.config.containerConfig.componentsInsets.left),
             contentStackView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: model.config.containerConfig.componentsInsets.right),
             contentStackView.topAnchor.constraint(equalTo: alertView.topAnchor, constant: model.config.containerConfig.componentsInsets.top),
@@ -186,7 +201,9 @@ private extension AlertScreenViewController {
             closeButtonTopConstraint,
             closeButton.widthAnchor.constraint(equalToConstant: model.config.closeButtonConfig.size.width),
             closeButton.heightAnchor.constraint(equalToConstant: model.config.closeButtonConfig.size.height),
-        ])
+        ]
+        
+        NSLayoutConstraint.activate(constraints)
     }
 }
 
@@ -212,11 +229,16 @@ extension AlertScreenViewController {
         self.view.layoutSubviews()
         
         self.contentStackView.stackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+        self.footerButtonsView.reset()
         var stackHeight: CGFloat = 0.0
-        
-        model.alert.components.map({ $0.createComponent(for: self.contentStackView) }).forEach({ (component, height) in
+
+        let containerInsets = model.config.containerConfig.containerInsets.left + abs(model.config.containerConfig.containerInsets.right)
+        let alertInsets = model.config.containerConfig.componentsInsets.left + abs(model.config.containerConfig.componentsInsets.right)
+        let parentWidth = self.view.frame.width - containerInsets - alertInsets
+
+        model.alert.components.map({ $0.createComponent(parentWidth: parentWidth) }).forEach({ (component, height) in
             self.contentStackView.stackView.addArrangedSubview(component)
-            
+
             stackHeight += height
             stackHeight += self.contentStackView.spacing
             stackHeight += self.contentStackView.spacing
@@ -235,12 +257,15 @@ extension AlertScreenViewController {
         case .none:
             break
         }
-        
+        self.view.layoutSubviews()
+
         footerButtonsView.layoutIfNeeded()
         let footerViewHeight = footerButtonsView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
         stackHeight += footerViewHeight
         
-        if stackHeight > self.containerView.frame.height / 1.5 {
+        let alertHeight = stackHeight + model.config.containerConfig.componentsInsets.top + model.config.containerConfig.componentsInsets.bottom
+        
+        if alertHeight > self.containerView.frame.height / 1.5 {
             stackHeight = self.containerView.frame.height / 1.5
             self.contentStackView.scrollView.isScrollEnabled = true
         } else {

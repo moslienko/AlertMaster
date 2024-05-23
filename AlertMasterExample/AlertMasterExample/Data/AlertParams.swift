@@ -91,21 +91,4 @@ enum AlertParams {
             }
         }
     }
-    
-    enum ActionButtonsLayout: Int, CaseIterable, AlertParamsSegment {
-        case auto = 0
-        case manual = 1
-
-        static var id: Int = 105
-        static var groupName: String = "Buttons layout"
-        
-        var fieldName: String {
-            switch self {
-            case .auto:
-                return "Auto"
-            case .manual:
-                return "Manual"
-            }
-        }
-    }
 }

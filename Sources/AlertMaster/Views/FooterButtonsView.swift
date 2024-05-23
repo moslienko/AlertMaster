@@ -46,6 +46,10 @@ public class FooterButtonsView: UIView {
 // MARK: - Public methods
 public extension FooterButtonsView {
     
+    func reset() {
+        self.mainStackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
+    }
+    
     func addCustomGroups(_ groups: [AlertButtonsGroup]) {
         groups.forEach({ group in
             switch group.position {
