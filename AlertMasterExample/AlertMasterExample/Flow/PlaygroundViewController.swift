@@ -50,9 +50,6 @@ private extension PlaygroundViewController {
         stackView.addArrangedSubview(self.label(text: AlertParams.ActionButtonsContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.ActionButtonsContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ActionButtonsContent.id))
         
-        stackView.addArrangedSubview(self.label(text: AlertParams.ActionButtonsLayout.groupName))
-        stackView.addArrangedSubview(self.segment(items: AlertParams.ActionButtonsLayout.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ActionButtonsLayout.id))
-        
         scrollView.addSubview(stackView)
         view.addSubview(scrollView)
         view.addSubview(bigButton)
@@ -153,11 +150,6 @@ private extension PlaygroundViewController {
                 return
             }
             viewModel.buttonsParam = val
-        case AlertParams.ActionButtonsLayout.id:
-            guard let val = AlertParams.ActionButtonsLayout(rawValue: sender.selectedSegmentIndex) else {
-                return
-            }
-            viewModel.actionButtonsLayout = val
         default:
             break
         }
@@ -165,10 +157,24 @@ private extension PlaygroundViewController {
     
     @objc
     func bigButtonTapped() {
+        let text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+        let regularFont = UIFont.systemFont(ofSize: 14)
+        let boldFont = UIFont.boldSystemFont(ofSize: 14)
+
+        let regularAttributes: [NSAttributedString.Key: Any] = [.font: regularFont, .foregroundColor: UIColor.black]
+        let boldAttributes: [NSAttributedString.Key: Any] = [.font: boldFont, .foregroundColor: UIColor.black]
+
+        let attributedString = NSMutableAttributedString(string: text, attributes: regularAttributes)
+
+        let boldRange = (text as NSString).range(of: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
+        attributedString.setAttributes(boldAttributes, range: boldRange)
+
         let alert = AlertMasterService(
             components: [
                 .image(UIImage(named: "cube-transparent")!, height: 100),
-                .text(value: "Текстовый компонент!", textAlignment: .center)
+                .text(value: "Текстовый компонент!", textAlignment: .center),
+                .textView(value: attributedString, textAlignment: .center)
             ],
             buttonsLayout: .none
         )
@@ -213,12 +219,7 @@ private extension PlaygroundViewController {
                 AlertButtonsGroup(position: .horizontal, buttons: buttonsThree)
             ]
             
-            switch viewModel.actionButtonsLayout {
-            case .auto:
-                alert.buttonsLayout = .auto(buttons: buttonsOne + buttonsTwo + buttonsThree, position: .horizontal)
-            case .manual:
-                alert.buttonsLayout = .manual(buttonsGroup: buttonsGroup)
-            }
+            alert.buttonsLayout = .manual(buttonsGroup: buttonsGroup)
         case .none:
             alert.buttonsLayout = .none
         }

@@ -14,5 +14,4 @@ class PlaygroundViewControllerModel {
     var alertConfig = AlertConfig()
     
     var buttonsParam: AlertParams.ActionButtonsContent = .horizontal
-    var actionButtonsLayout: AlertParams.ActionButtonsLayout = .auto
 }
