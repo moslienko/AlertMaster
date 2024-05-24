@@ -10,6 +10,7 @@ import UIKit
 
 /// Config for alerts container style
 public struct AlertContainerConfig {
+    public var maxAlertHeightIntPercentage: Float
     public var containerInsets: AlertContainerConfig.SideInset
     public var componentsInsets: UIEdgeInsets
     public var componentsSpacing: CGFloat
@@ -45,6 +46,7 @@ public struct AlertContainerConfig {
     }
     
     public init(
+        maxAlertHeightIntPercentage: Float = 66.0,
         containerInsets: AlertContainerConfig.SideInset = SideInset(left: 16.0, right: -16.0),
         componentsInsets: UIEdgeInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: -16.0, right: -16.0),
         componentsSpacing: CGFloat = 8.0,
@@ -55,6 +57,7 @@ public struct AlertContainerConfig {
         backgroundImage: UIImage? = nil,
         shadowParams: AlertContainerConfig.ShadowParams? = nil
     ) {
+        self.maxAlertHeightIntPercentage = maxAlertHeightIntPercentage
         self.containerInsets = containerInsets
         self.componentsInsets = componentsInsets
         self.componentsSpacing = componentsSpacing

@@ -338,9 +338,10 @@ extension AlertScreenViewController {
         stackHeight += footerViewHeight
         
         let alertHeight = stackHeight + model.config.containerConfig.componentsInsets.top + model.config.containerConfig.componentsInsets.bottom
+        let maxAlertHeight = containerView.frame.height * (CGFloat(model.config.containerConfig.maxAlertHeightIntPercentage) / 100.0)
         
-        if alertHeight > self.containerView.frame.height / 1.5 {
-            stackHeight = self.containerView.frame.height / 1.5
+        if alertHeight > maxAlertHeight {
+            stackHeight = maxAlertHeight
             self.contentStackView.scrollView.isScrollEnabled = true
         } else {
             self.contentStackView.scrollView.isScrollEnabled = false
