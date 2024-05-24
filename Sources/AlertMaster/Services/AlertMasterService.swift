@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import AppViewUtilits
 
 public class AlertMasterService {
     
@@ -16,6 +17,10 @@ public class AlertMasterService {
 
     private let screen = AlertScreenViewController()
     
+    public let headerStyle: DecorateWrapper<UILabel> = .wrap(style: { _ in
+        
+    })
+        
     public init(
         components: [AlertComponents],
         buttonsLayout: ButtonLayout

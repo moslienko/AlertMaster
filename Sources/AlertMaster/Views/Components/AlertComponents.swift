@@ -5,24 +5,22 @@
 //  Created by Pavel Moslienko on 22.05.2024.
 //
 
+import AppViewUtilits
 import Foundation
 import UIKit
 
 public enum AlertComponents {
-    case text(value: String, textAlignment: NSTextAlignment = .left),
-         textView(value: NSAttributedString, textAlignment: NSTextAlignment = .left),
+    case text(value: String, style: DecorateWrapper<UILabel>),
+         textView(value: NSAttributedString, style: DecorateWrapper<UITextView>),
          image(_ image: UIImage, height: CGFloat),
          custom(view: UIView, height: CGFloat)
     
     func createComponent(parentWidth: CGFloat) -> (UIView, CGFloat) {
         switch self {
-        case let .text(value, textAlignment):
+        case let .text(value, style):
             let label = UILabel()
             label.text = value
-            label.textColor = .black
-            label.numberOfLines = 0
-            label.textAlignment = textAlignment
-            label.backgroundColor = .clear
+            label.apply(style)
             
             let height = value.height(
                 withConstrainedWidth: parentWidth,
@@ -30,13 +28,13 @@ public enum AlertComponents {
             )
             
             return (label, height)
-        case let .textView(value, textAlignment):
+        case let .textView(value, style):
             let textView = UITextView()
             textView.attributedText = value
+            textView.backgroundColor = .clear
             textView.isEditable = false
             textView.isScrollEnabled = false
-            textView.textAlignment = textAlignment
-            textView.backgroundColor = .clear
+            textView.apply(style)
             
             let font = value.attribute(.font, at: 0, effectiveRange: nil) as? UIFont ?? UIFont.systemFont(ofSize: 14)
             let height = value.string.height(

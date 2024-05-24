@@ -7,6 +7,7 @@
 
 import UIKit
 import AlertMaster
+import AppViewUtilits
 
 class PlaygroundViewController: UIViewController {
     
@@ -170,15 +171,26 @@ private extension PlaygroundViewController {
         let boldRange = (text as NSString).range(of: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
         attributedString.setAttributes(boldAttributes, range: boldRange)
 
+        let headerStyle: DecorateWrapper<UILabel> = .wrap(style: {
+            $0.numberOfLines = 0
+            $0.textColor = .black
+            $0.font = .systemFont(ofSize: 16, weight: .bold)
+            $0.textAlignment = .center
+        })
+        let textViewStyle: DecorateWrapper<UITextView> = .wrap(style: {
+            $0.textAlignment = .center
+        })
+        
         let alert = AlertMasterService(
             components: [
                 .image(UIImage(named: "cube-transparent")!, height: 100),
-                .text(value: "Текстовый компонент!", textAlignment: .center),
-                .textView(value: attributedString, textAlignment: .center)
+                .text(value: "Текстовый компонент!", style: headerStyle),
+                .textView(value: attributedString, style: textViewStyle)
             ],
             buttonsLayout: .none
         )
-        
+        let style = alert.headerStyle
+
         let buttons = self.createButtonsList(count: 3, prefix: "")
         buttons.forEach({
             $0.action = {
