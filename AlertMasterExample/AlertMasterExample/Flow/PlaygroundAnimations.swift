@@ -16,6 +16,7 @@ class PlaygroundAnimations {
         func showView(backgroundView: UIView, alertView: UIView) {
             alertView.transform = CGAffineTransform(rotationAngle: .pi / 2)
             alertView.alpha = 0.0
+            backgroundView.alpha = 0.0
             UIView.animate(withDuration: 0.35) {
                 backgroundView.alpha = 1.0
                 alertView.transform = CGAffineTransform.identity
@@ -39,6 +40,7 @@ class PlaygroundAnimations {
         func showView(backgroundView: UIView, alertView: UIView) {
             alertView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
             alertView.alpha = 0.0
+            backgroundView.alpha = 0.0
             UIView.animate(withDuration: 0.35) {
                 backgroundView.alpha = 1.0
                 alertView.transform = CGAffineTransform.identity
@@ -61,6 +63,8 @@ class PlaygroundAnimations {
         
         func showView(backgroundView: UIView, alertView: UIView) {
             alertView.transform = CGAffineTransform(translationX: 0, y: -backgroundView.bounds.height)
+            alertView.alpha = 0.0
+            backgroundView.alpha = 0.0
             UIView.animate(withDuration: 0.35) {
                 backgroundView.alpha = 1.0
                 alertView.alpha = 1.0

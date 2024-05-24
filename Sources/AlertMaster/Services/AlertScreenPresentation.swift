@@ -17,6 +17,8 @@ public class AlertScreenPresentation: AlertScreenPresentable {
     public init() {}
     
     public func showView(backgroundView: UIView, alertView: UIView) {
+        alertView.alpha = 0.0
+        backgroundView.alpha = 0.0
         UIView.animate(withDuration: 0.35) {
             backgroundView.alpha = 1.0
             alertView.alpha = 1

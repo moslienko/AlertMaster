@@ -47,7 +47,7 @@ public class AlertScreenViewController: UIViewController {
         }
         return view
     }()
-
+    
     private lazy var alertView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -137,8 +137,6 @@ public class AlertScreenViewController: UIViewController {
         
         coordinator.animate(alongsideTransition: { (context) in
             self.viewDidLoad()
-            self.containerView.alpha = 1.0
-            self.alertView.alpha = 1
         })
     }
 }
@@ -147,7 +145,7 @@ public class AlertScreenViewController: UIViewController {
 private extension AlertScreenViewController {
     
     func setupInitialState() {
-        self.setupConstaints()
+        self.setupConstraints()
         self.setupComponents()
         self.setupActions()
     }
@@ -158,9 +156,6 @@ private extension AlertScreenViewController {
         }
         self.navigationItem.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        
-        self.containerView.alpha = 0.0
-        self.alertView.alpha = 0
         
         self.contentStackView.stackView.distribution = .fill
         self.contentStackView.stackView.alignment = .fill
@@ -182,60 +177,123 @@ private extension AlertScreenViewController {
         self.contentStackView.backgroundColor = .clear
     }
     
-    func setupConstaints() {
+    func setupConstraints() {
         guard let model = self.model else {
             return
         }
-        
-        view.subviews.forEach({ $0.removeFromSuperview() })
+        clearSubviewsAndConstraints()
+        configureVisibility()
+        addSubviews()
+        configureCloseButtonConstraints()
+        contentStackViewHeightConstraint = contentStackView.heightAnchor.constraint(equalToConstant: 0.0)
+        addConstraints()
+        NSLayoutConstraint.activate(constraints)
+    }
+}
+
+// MARK: - Constraints methods
+private extension AlertScreenViewController {
+    
+    func clearSubviewsAndConstraints() {
+        view.subviews.forEach { $0.removeFromSuperview() }
         NSLayoutConstraint.deactivate(constraints)
         constraints = []
-        
-        view.addSubview(blurView)
+    }
+    
+    func addSubviews() {
+        if !blurView.isHidden {
+            view.addSubview(blurView)
+        }
         view.addSubview(containerView)
-        view.addSubview(backgroundImageView)
+        
+        if !backgroundImageView.isHidden {
+            view.addSubview(backgroundImageView)
+        }
         view.addSubview(backgroundTouchView)
         
         backgroundTouchView.addSubview(alertView)
-        alertView.addSubview(alertBackgroundImageView)
+        if !alertBackgroundImageView.isHidden {
+            alertView.addSubview(alertBackgroundImageView)
+        }
+        
         alertView.addSubview(contentStackView)
-        alertView.addSubview(closeButton)
+        if !closeButton.isHidden {
+            alertView.addSubview(closeButton)
+        }
+    }
+    
+    func configureVisibility() {
+        guard let model = self.model else {
+            return
+        }
         
         blurView.isHidden = !model.config.backgroundConfig.isNeedBlur
         backgroundImageView.isHidden = model.config.backgroundConfig.backgroundImage == nil
         alertBackgroundImageView.isHidden = model.config.containerConfig.backgroundImage == nil
         closeButton.isHidden = !model.config.closeButtonConfig.isShowCloseButton
-        print("setupConstaints - \(self.view)")
-        let closeBtnPosition = model.config.closeButtonConfig.position
-        switch closeBtnPosition {
-        case let .left(inset):
-            closeButtonTopConstraint = NSLayoutConstraint(item: closeButton, attribute: .top, relatedBy: .equal, toItem: alertView, attribute: .top, multiplier: 1.0, constant: inset.top)
-            closeButtonSideConstraint = NSLayoutConstraint(item: closeButton, attribute: .leading, relatedBy: .equal, toItem: alertView, attribute: .leading, multiplier: 1.0, constant: inset.side)
-        case let .right(inset):
-            closeButtonTopConstraint = NSLayoutConstraint(item: closeButton, attribute: .top, relatedBy: .equal, toItem: alertView, attribute: .top, multiplier: 1.0, constant: inset.top)
-            closeButtonSideConstraint = NSLayoutConstraint(item: closeButton, attribute: .trailing, relatedBy: .equal, toItem: alertView, attribute: .trailing, multiplier: 1.0, constant: inset.side)
-        }
-        
-        contentStackViewHeightConstraint = NSLayoutConstraint(item: contentStackView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0)
-        
-        guard let contentStackViewHeightConstraint = contentStackViewHeightConstraint,
-              let closeButtonSideConstraint = closeButtonSideConstraint,
-              let closeButtonTopConstraint = self.closeButtonTopConstraint
-        else {
+    }
+    
+    func configureCloseButtonConstraints() {
+        guard let model = self.model else {
             return
         }
         
+        let closeBtnPosition = model.config.closeButtonConfig.position
+        switch closeBtnPosition {
+        case let .left(inset):
+            closeButtonTopConstraint = closeButton.topAnchor.constraint(equalTo: alertView.topAnchor, constant: inset.top)
+            closeButtonSideConstraint = closeButton.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: inset.side)
+        case let .right(inset):
+            closeButtonTopConstraint = closeButton.topAnchor.constraint(equalTo: alertView.topAnchor, constant: inset.top)
+            closeButtonSideConstraint = closeButton.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: inset.side)
+        }
+    }
+    
+    func addConstraints() {
+        guard let model = self.model,
+              let contentStackViewHeightConstraint = contentStackViewHeightConstraint,
+              let closeButtonTopConstraint = closeButtonTopConstraint,
+              let closeButtonSideConstraint = closeButtonSideConstraint else {
+            return
+        }
+        
+        if !blurView.isHidden {
+            constraints += [
+                blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                blurView.topAnchor.constraint(equalTo: view.topAnchor),
+                blurView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ]
+        }
+        
+        if !backgroundImageView.isHidden {
+            constraints += [
+                backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+                backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ]
+        }
+        
+        if !alertBackgroundImageView.isHidden {
+            constraints += [
+                alertBackgroundImageView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: model.config.containerConfig.componentsInsets.left),
+                alertBackgroundImageView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: model.config.containerConfig.componentsInsets.right),
+                alertBackgroundImageView.topAnchor.constraint(equalTo: alertView.topAnchor, constant: model.config.containerConfig.componentsInsets.top),
+                alertBackgroundImageView.bottomAnchor.constraint(equalTo: alertView.bottomAnchor, constant: model.config.containerConfig.componentsInsets.bottom)
+            ]
+        }
+
+        if !closeButton.isHidden {
+            constraints += [
+                closeButtonTopConstraint,
+                closeButtonSideConstraint,
+                closeButton.widthAnchor.constraint(equalToConstant: model.config.closeButtonConfig.size.width),
+                closeButton.heightAnchor.constraint(equalToConstant: model.config.closeButtonConfig.size.height)
+            ]
+        }
+        
         constraints += [
-            blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            blurView.topAnchor.constraint(equalTo: view.topAnchor),
-            blurView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
-            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
             containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             containerView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -251,25 +309,12 @@ private extension AlertScreenViewController {
             alertView.leadingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.leadingAnchor, constant: model.config.containerConfig.containerInsets.left),
             alertView.trailingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.trailingAnchor, constant: model.config.containerConfig.containerInsets.right),
             
-            
-            alertBackgroundImageView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: model.config.containerConfig.componentsInsets.left),
-            alertBackgroundImageView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: model.config.containerConfig.componentsInsets.right),
-            alertBackgroundImageView.topAnchor.constraint(equalTo: alertView.topAnchor, constant: model.config.containerConfig.componentsInsets.top),
-            alertBackgroundImageView.bottomAnchor.constraint(equalTo: alertView.bottomAnchor, constant: model.config.containerConfig.componentsInsets.bottom),
-            
             contentStackView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: model.config.containerConfig.componentsInsets.left),
             contentStackView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: model.config.containerConfig.componentsInsets.right),
             contentStackView.topAnchor.constraint(equalTo: alertView.topAnchor, constant: model.config.containerConfig.componentsInsets.top),
             contentStackView.bottomAnchor.constraint(equalTo: alertView.bottomAnchor, constant: model.config.containerConfig.componentsInsets.bottom),
-            contentStackViewHeightConstraint,
-            
-            closeButtonSideConstraint,
-            closeButtonTopConstraint,
-            closeButton.widthAnchor.constraint(equalToConstant: model.config.closeButtonConfig.size.width),
-            closeButton.heightAnchor.constraint(equalToConstant: model.config.closeButtonConfig.size.height),
+            contentStackViewHeightConstraint
         ]
-        
-        NSLayoutConstraint.activate(constraints)
     }
 }
 
