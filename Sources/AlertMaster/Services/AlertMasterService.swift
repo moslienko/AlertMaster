@@ -37,7 +37,7 @@ public class AlertMasterService {
         screen.modalPresentationStyle = .overFullScreen
         
         DispatchQueue.main.async {
-            controller.present(self.screen, animated: true)
+            controller.present(self.screen, animated: false)
         }
     }
     

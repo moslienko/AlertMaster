@@ -16,6 +16,7 @@
 		958CDBAF2BFDE005000E7E46 /* PlaygroundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958CDBAE2BFDE005000E7E46 /* PlaygroundViewController.swift */; };
 		958CDBB12BFDE012000E7E46 /* PlaygroundViewControllerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958CDBB02BFDE012000E7E46 /* PlaygroundViewControllerModel.swift */; };
 		958CDBB32BFDE057000E7E46 /* AlertParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958CDBB22BFDE057000E7E46 /* AlertParams.swift */; };
+		95C1AB9A2C0092FB001BCA99 /* PlaygroundAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C1AB992C0092FB001BCA99 /* PlaygroundAnimations.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		958CDBAE2BFDE005000E7E46 /* PlaygroundViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundViewController.swift; sourceTree = "<group>"; };
 		958CDBB02BFDE012000E7E46 /* PlaygroundViewControllerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundViewControllerModel.swift; sourceTree = "<group>"; };
 		958CDBB22BFDE057000E7E46 /* AlertParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertParams.swift; sourceTree = "<group>"; };
+		95C1AB992C0092FB001BCA99 /* PlaygroundAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaygroundAnimations.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 			children = (
 				958CDBAE2BFDE005000E7E46 /* PlaygroundViewController.swift */,
 				958CDBB02BFDE012000E7E46 /* PlaygroundViewControllerModel.swift */,
+				95C1AB992C0092FB001BCA99 /* PlaygroundAnimations.swift */,
 			);
 			path = Flow;
 			sourceTree = "<group>";
@@ -173,6 +176,7 @@
 				958CDBAF2BFDE005000E7E46 /* PlaygroundViewController.swift in Sources */,
 				95494E552BDF673A0090F18E /* AppDelegate.swift in Sources */,
 				95494E572BDF673A0090F18E /* SceneDelegate.swift in Sources */,
+				95C1AB9A2C0092FB001BCA99 /* PlaygroundAnimations.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -51,6 +51,10 @@ private extension PlaygroundViewController {
         stackView.addArrangedSubview(self.label(text: AlertParams.ActionButtonsContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.ActionButtonsContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ActionButtonsContent.id))
         
+        
+        stackView.addArrangedSubview(self.label(text: AlertParams.AnimationContent.groupName))
+        stackView.addArrangedSubview(self.segment(items: AlertParams.AnimationContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.AnimationContent.id))
+        
         scrollView.addSubview(stackView)
         view.addSubview(scrollView)
         view.addSubview(bigButton)
@@ -151,6 +155,20 @@ private extension PlaygroundViewController {
                 return
             }
             viewModel.buttonsParam = val
+        case AlertParams.AnimationContent.id:
+            guard let val = AlertParams.AnimationContent(rawValue: sender.selectedSegmentIndex) else {
+                return
+            }
+            switch val {
+            case .default:
+                self.viewModel.alertConfig.presentableService = AlertScreenPresentation()
+            case .zoom:
+                self.viewModel.alertConfig.presentableService = PlaygroundAnimations.ZoomPresentable()
+            case .slide:
+                self.viewModel.alertConfig.presentableService = PlaygroundAnimations.SlidePresentable()
+            case .rotate:
+                self.viewModel.alertConfig.presentableService = PlaygroundAnimations.RotatePresentable()
+            }
         default:
             break
         }
@@ -189,7 +207,6 @@ private extension PlaygroundViewController {
             ],
             buttonsLayout: .none
         )
-        let style = alert.headerStyle
 
         let buttons = self.createButtonsList(count: 3, prefix: "")
         buttons.forEach({

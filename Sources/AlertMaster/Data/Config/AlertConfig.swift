@@ -13,16 +13,19 @@ public struct AlertConfig {
     public var closeButtonConfig: AlertCloseButtonConfig
     public var containerConfig: AlertContainerConfig
     public var buttonsConfig: AlertButtonsConfig
+    public var presentableService: AlertScreenPresentable
     
     public init(
         backgroundConfig: AlertBackgroundConfig = AlertBackgroundConfig(),
         closeButtonConfig: AlertCloseButtonConfig = AlertCloseButtonConfig(),
         containerConfig: AlertContainerConfig = AlertContainerConfig(),
-        buttonsConfig: AlertButtonsConfig = AlertButtonsConfig()
+        buttonsConfig: AlertButtonsConfig = AlertButtonsConfig(),
+        presentableService: AlertScreenPresentable = AlertScreenPresentation()
     ) {
         self.backgroundConfig = backgroundConfig
         self.closeButtonConfig = closeButtonConfig
         self.containerConfig = containerConfig
         self.buttonsConfig = buttonsConfig
+        self.presentableService = presentableService
     }
 }

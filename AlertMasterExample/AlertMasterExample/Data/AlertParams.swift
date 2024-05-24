@@ -97,4 +97,27 @@ enum AlertParams {
             }
         }
     }
+    
+    enum AnimationContent: Int, CaseIterable, AlertParamsSegment {
+        case `default` = 0
+        case zoom = 1
+        case slide = 2
+        case rotate = 3
+
+        static var id: Int = 105
+        static var groupName: String = "Animation"
+        
+        var fieldName: String {
+            switch self {
+            case .default:
+                return "Default"
+            case .zoom:
+                return "Zoom"
+            case .slide:
+                return "Slide"
+            case .rotate:
+                return "Rotate"
+            }
+        }
+    }
 }

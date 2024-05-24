@@ -43,7 +43,7 @@ public class AlertScreenViewController: UIViewController {
         view.layer.cornerRadius = model?.config.containerConfig.cornerRadius ?? 0.0
         view.layer.borderWidth = model?.config.containerConfig.borderWidth ?? 0.0
         view.layer.borderColor = model?.config.containerConfig.borderColor
-
+        
         if let shadowParams = model?.config.containerConfig.shadowParams {
             view.layer.shadowColor = shadowParams.shadowColor
             view.layer.shadowOpacity = shadowParams.shadowOpacity
@@ -231,7 +231,7 @@ private extension AlertScreenViewController {
             alertView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             alertView.leadingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.leadingAnchor, constant: model.config.containerConfig.containerInsets.left),
             alertView.trailingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.trailingAnchor, constant: model.config.containerConfig.containerInsets.right),
-
+            
             
             alertBackgroundImageView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: model.config.containerConfig.componentsInsets.left),
             alertBackgroundImageView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: model.config.containerConfig.componentsInsets.right),
@@ -278,14 +278,14 @@ extension AlertScreenViewController {
         self.contentStackView.stackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
         self.footerButtonsView.reset()
         var stackHeight: CGFloat = 0.0
-
+        
         let containerInsets = model.config.containerConfig.containerInsets.left + abs(model.config.containerConfig.containerInsets.right)
         let alertInsets = model.config.containerConfig.componentsInsets.left + abs(model.config.containerConfig.componentsInsets.right)
         let parentWidth = self.view.frame.width - containerInsets - alertInsets
-
+        
         model.alert.components.map({ $0.createComponent(parentWidth: parentWidth) }).forEach({ (component, height) in
             self.contentStackView.stackView.addArrangedSubview(component)
-
+            
             stackHeight += height
             stackHeight += self.contentStackView.spacing
             stackHeight += self.contentStackView.spacing
@@ -305,7 +305,7 @@ extension AlertScreenViewController {
             break
         }
         self.view.layoutSubviews()
-
+        
         footerButtonsView.layoutIfNeeded()
         let footerViewHeight = footerButtonsView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
         stackHeight += footerViewHeight
@@ -325,20 +325,19 @@ extension AlertScreenViewController {
     }
     
     private func showView() {
-        UIView.animate(withDuration: 0.35) {
-            self.containerView.alpha = 1.0
-            self.alertView.alpha = 1
-            self.view.layoutIfNeeded()
-        }
+        self.model?.config.presentableService.showView(
+            backgroundView: self.containerView,
+            alertView: self.alertView
+        )
     }
     
     func hideView(_ finished: (() -> Void)? = nil) {
-        UIView.animate(withDuration: 0.35) {
-            self.containerView.alpha = 0.0
-            self.alertView.alpha = 0
-            self.view.layoutIfNeeded()
-        } completion: { _ in
-            finished?()
-        }
+        self.model?.config.presentableService.hideView(
+            backgroundView: self.containerView,
+            alertView: self.alertView,
+            finished: {
+                finished?()
+            }
+        )
     }
 }
