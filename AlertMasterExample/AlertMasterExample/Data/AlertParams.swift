@@ -18,7 +18,8 @@ enum AlertParams {
     enum BackgroundContent: Int, CaseIterable, AlertParamsSegment {
         case withBlur = 0
         case withColor = 1
-        
+        case image = 2
+
         static var id: Int = 101
         static var groupName: String = "Background"
         
@@ -28,13 +29,16 @@ enum AlertParams {
                 return "Blur"
             case .withColor:
                 return "Color"
+            case .image:
+                return "Image"
             }
         }
     }
     
     enum ContainerContent: Int, CaseIterable, AlertParamsSegment {
         case white = 0
-        case red = 1
+        case border = 1
+        case image = 2
         
         static var id: Int = 102
         static var groupName: String = "Container"
@@ -42,9 +46,11 @@ enum AlertParams {
         var fieldName: String {
             switch self {
             case .white:
-                return "White, corner 15"
-            case .red:
-                return "Red, corner 0"
+                return "White"
+            case .border:
+                return "Border, shadow"
+            case .image:
+                return "With image"
             }
         }
     }

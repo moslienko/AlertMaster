@@ -113,11 +113,11 @@ private extension PlaygroundViewController {
             
             switch val {
             case .withBlur:
-                self.viewModel.alertConfig.backgroundConfig.isNeedBlur = true
-                self.viewModel.alertConfig.backgroundConfig.backgroundColor = .clear
+                self.viewModel.alertConfig.backgroundConfig = AlertBackgroundConfig(isNeedBlur: true, blurStyle: .regular, backgroundColor: .clear)
             case .withColor:
-                self.viewModel.alertConfig.backgroundConfig.isNeedBlur = false
-                self.viewModel.alertConfig.backgroundConfig.backgroundColor = .black.withAlphaComponent(0.3)
+                self.viewModel.alertConfig.backgroundConfig = AlertBackgroundConfig(isNeedBlur: false, backgroundColor: .black.withAlphaComponent(0.3))
+            case .image:
+                self.viewModel.alertConfig.backgroundConfig = AlertBackgroundConfig(backgroundColor: .clear, backgroundImage: UIImage(named: "sky"))
             }
         case AlertParams.ContainerContent.id:
             guard let val = AlertParams.ContainerContent(rawValue: sender.selectedSegmentIndex) else {
@@ -125,11 +125,11 @@ private extension PlaygroundViewController {
             }
             switch val {
             case .white:
-                self.viewModel.alertConfig.containerConfig.backgroundColor = .white
-                self.viewModel.alertConfig.containerConfig.cornerRadius = 15
-            case .red:
-                self.viewModel.alertConfig.containerConfig.backgroundColor = .red
-                self.viewModel.alertConfig.containerConfig.cornerRadius = 0
+                self.viewModel.alertConfig.containerConfig = AlertContainerConfig(cornerRadius: 15, backgroundColor: .white)
+            case .border:
+                self.viewModel.alertConfig.containerConfig = AlertContainerConfig(cornerRadius: 19, borderWidth: 3, borderColor: UIColor.red.cgColor, backgroundColor: .white, shadowParams: AlertContainerConfig.ShadowParams(shadowColor: UIColor.black.cgColor, shadowOpacity: 1.0, shadowOffset: .zero, shadowRadius: 10))
+            case .image:
+                self.viewModel.alertConfig.containerConfig = AlertContainerConfig(cornerRadius: 15, backgroundColor: .white, backgroundImage: UIImage(named: "fireworks"))
             }
         case AlertParams.CloseButtonContent.id:
             guard let val = AlertParams.CloseButtonContent(rawValue: sender.selectedSegmentIndex) else {

@@ -27,11 +27,43 @@ public class AlertScreenViewController: UIViewController {
         return view
     }()
     
+    private lazy var backgroundImageView: UIImageView = {
+        let view = UIImageView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.contentMode = .scaleAspectFill
+        view.image = model?.config.backgroundConfig.backgroundImage
+        
+        return view
+    }()
+    
     private lazy var alertView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = model?.config.containerConfig.backgroundColor
         view.layer.cornerRadius = model?.config.containerConfig.cornerRadius ?? 0.0
+        view.layer.borderWidth = model?.config.containerConfig.borderWidth ?? 0.0
+        view.layer.borderColor = model?.config.containerConfig.borderColor
+
+        if let shadowParams = model?.config.containerConfig.shadowParams {
+            view.layer.shadowColor = shadowParams.shadowColor
+            view.layer.shadowOpacity = shadowParams.shadowOpacity
+            view.layer.shadowOffset = shadowParams.shadowOffset
+            view.layer.shadowRadius = shadowParams.shadowRadius
+        } else {
+            view.layer.shadowColor = UIColor.clear.cgColor
+            view.layer.shadowOpacity = 0
+            view.layer.shadowOffset = .zero
+            view.layer.shadowRadius = 0
+        }
+        
+        return view
+    }()
+    
+    private lazy var alertBackgroundImageView: UIImageView = {
+        let view = UIImageView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.contentMode = .scaleAspectFit
+        view.image = model?.config.containerConfig.backgroundImage
         
         return view
     }()
@@ -148,12 +180,16 @@ private extension AlertScreenViewController {
         constraints = []
         
         view.addSubview(blurView)
+        view.addSubview(backgroundImageView)
         view.addSubview(containerView)
         containerView.addSubview(alertView)
+        alertView.addSubview(alertBackgroundImageView)
         alertView.addSubview(contentStackView)
         alertView.addSubview(closeButton)
         
         blurView.isHidden = !model.config.backgroundConfig.isNeedBlur
+        backgroundImageView.isHidden = model.config.backgroundConfig.backgroundImage == nil
+        alertBackgroundImageView.isHidden = model.config.containerConfig.backgroundImage == nil
         closeButton.isHidden = !model.config.closeButtonConfig.isShowCloseButton
         print("setupConstaints - \(self.view)")
         let closeBtnPosition = model.config.closeButtonConfig.position
@@ -181,6 +217,11 @@ private extension AlertScreenViewController {
             blurView.topAnchor.constraint(equalTo: view.topAnchor),
             blurView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
             containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             containerView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -191,6 +232,12 @@ private extension AlertScreenViewController {
             alertView.leadingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.leadingAnchor, constant: model.config.containerConfig.containerInsets.left),
             alertView.trailingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.trailingAnchor, constant: model.config.containerConfig.containerInsets.right),
 
+            
+            alertBackgroundImageView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: model.config.containerConfig.componentsInsets.left),
+            alertBackgroundImageView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: model.config.containerConfig.componentsInsets.right),
+            alertBackgroundImageView.topAnchor.constraint(equalTo: alertView.topAnchor, constant: model.config.containerConfig.componentsInsets.top),
+            alertBackgroundImageView.bottomAnchor.constraint(equalTo: alertView.bottomAnchor, constant: model.config.containerConfig.componentsInsets.bottom),
+            
             contentStackView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: model.config.containerConfig.componentsInsets.left),
             contentStackView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: model.config.containerConfig.componentsInsets.right),
             contentStackView.topAnchor.constraint(equalTo: alertView.topAnchor, constant: model.config.containerConfig.componentsInsets.top),
