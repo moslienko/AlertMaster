@@ -36,6 +36,18 @@ public class AlertScreenViewController: UIViewController {
         return view
     }()
     
+    private lazy var backgroundTouchView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .clear
+        if model?.config.backgroundConfig.isAllowTapForDismiss ?? false {
+            let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleBackgroundContainerTap(_:)))
+            view.addGestureRecognizer(tap)
+            view.isUserInteractionEnabled = true
+        }
+        return view
+    }()
+
     private lazy var alertView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -180,9 +192,11 @@ private extension AlertScreenViewController {
         constraints = []
         
         view.addSubview(blurView)
-        view.addSubview(backgroundImageView)
         view.addSubview(containerView)
-        containerView.addSubview(alertView)
+        view.addSubview(backgroundImageView)
+        view.addSubview(backgroundTouchView)
+        
+        backgroundTouchView.addSubview(alertView)
         alertView.addSubview(alertBackgroundImageView)
         alertView.addSubview(contentStackView)
         alertView.addSubview(closeButton)
@@ -227,6 +241,11 @@ private extension AlertScreenViewController {
             containerView.topAnchor.constraint(equalTo: view.topAnchor),
             containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
+            backgroundTouchView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundTouchView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundTouchView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundTouchView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
             alertView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             alertView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             alertView.leadingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.leadingAnchor, constant: model.config.containerConfig.containerInsets.left),
@@ -259,6 +278,14 @@ extension AlertScreenViewController {
     
     @objc
     private func closeButtonTapped(_ sender: UIButton) {
+        self.hideView {
+            self.model?.didDismissButtonTapped?()
+            self.dismiss(animated: false, completion: nil)
+        }
+    }
+    
+    @objc
+    private func handleBackgroundContainerTap(_ sender: UITapGestureRecognizer) {
         self.hideView {
             self.model?.didDismissButtonTapped?()
             self.dismiss(animated: false, completion: nil)
