@@ -68,6 +68,10 @@ public class AlertScreenViewController: UIViewController {
             view.layer.shadowRadius = 0
         }
         
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleAlertContainerTap(_:)))
+        view.addGestureRecognizer(tap)
+        view.isUserInteractionEnabled = true
+        
         return view
     }()
     
@@ -94,10 +98,10 @@ public class AlertScreenViewController: UIViewController {
         return stackView
     }()
     
-    private let closeButton: UIButton = {
+    private lazy var closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.tintColor = .black
+        button.tintColor = self.model?.config.closeButtonConfig.tintColor
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
         
@@ -139,6 +143,10 @@ public class AlertScreenViewController: UIViewController {
             self.viewDidLoad()
         })
     }
+    
+    deinit {
+        removeKeyboardObservers()
+    }
 }
 
 // MARK: - Setup methods
@@ -147,6 +155,7 @@ private extension AlertScreenViewController {
     func setupInitialState() {
         self.setupConstraints()
         self.setupComponents()
+        self.setupKeyboardObservers()
         self.setupActions()
     }
     
@@ -188,6 +197,16 @@ private extension AlertScreenViewController {
         contentStackViewHeightConstraint = contentStackView.heightAnchor.constraint(equalToConstant: 0.0)
         addConstraints()
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    func setupKeyboardObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    func removeKeyboardObservers() {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
 
@@ -283,7 +302,7 @@ private extension AlertScreenViewController {
                 alertBackgroundImageView.bottomAnchor.constraint(equalTo: alertView.bottomAnchor, constant: model.config.containerConfig.componentsInsets.bottom)
             ]
         }
-
+        
         if !closeButton.isHidden {
             constraints += [
                 closeButtonTopConstraint,
@@ -319,10 +338,10 @@ private extension AlertScreenViewController {
 }
 
 // MARK: - Actions
-extension AlertScreenViewController {
+private extension AlertScreenViewController {
     
     @objc
-    private func closeButtonTapped(_ sender: UIButton) {
+    func closeButtonTapped(_ sender: UIButton) {
         self.hideView {
             self.model?.didDismissButtonTapped?()
             self.dismiss(animated: false, completion: nil)
@@ -330,18 +349,53 @@ extension AlertScreenViewController {
     }
     
     @objc
-    private func handleBackgroundContainerTap(_ sender: UITapGestureRecognizer) {
+    func handleBackgroundContainerTap(_ sender: UITapGestureRecognizer) {
         self.hideView {
             self.model?.didDismissButtonTapped?()
             self.dismiss(animated: false, completion: nil)
         }
+    }
+    
+    @objc
+    func handleAlertContainerTap(_ sender: UITapGestureRecognizer) {
+        self.view.endEditing(true)
+    }
+    
+    @objc
+    func keyboardWillShow(notification: Notification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+        
+        var contentInset = self.contentStackView.scrollView.contentInset
+        contentInset.bottom = keyboardSize.height
+        self.contentStackView.scrollView.contentInset = contentInset
+    }
+    
+    @objc
+    func keyboardWillHide(notification: Notification) {
+        self.contentStackView.scrollView.contentInset = .zero
     }
 }
 
-// MARK: - Module methods
+// MARK: - External module methods
 extension AlertScreenViewController {
     
-    internal func setupView() {
+    func hideView(_ finished: (() -> Void)? = nil) {
+        self.model?.config.presentableService.hideView(
+            backgroundView: self.containerView,
+            alertView: self.alertView,
+            finished: {
+                finished?()
+            }
+        )
+    }
+}
+
+// MARK: - Internal module methods
+private extension AlertScreenViewController {
+    
+    func setupView() {
         guard let model = self.model else {
             return
         }
@@ -355,15 +409,20 @@ extension AlertScreenViewController {
         let alertInsets = model.config.containerConfig.componentsInsets.left + abs(model.config.containerConfig.componentsInsets.right)
         let parentWidth = self.view.frame.width - containerInsets - alertInsets
         
-        model.alert.components.map({ $0.createComponent(parentWidth: parentWidth) }).forEach({ (component, height) in
-            self.contentStackView.stackView.addArrangedSubview(component)
+        model.alert.components.map({ $0.createComponent(parentWidth: parentWidth) }).enumerated().forEach({ (index, data) in
+            self.contentStackView.stackView.addArrangedSubview(data.0)
             
-            stackHeight += height
-            stackHeight += self.contentStackView.spacing
-            stackHeight += self.contentStackView.spacing
+            stackHeight += data.1
+            if index != model.alert.components.count - 1 {
+                stackHeight += self.contentStackView.spacing
+            }
             self.view.layoutIfNeeded()
         })
         
+        if !model.alert.components.isEmpty {
+            // Spacing between buttons and components
+            stackHeight += self.contentStackView.spacing
+        }
         self.contentStackView.stackView.addArrangedSubview(self.footerButtonsView)
         
         switch model.alert.buttonsLayout {
@@ -381,7 +440,6 @@ extension AlertScreenViewController {
         footerButtonsView.layoutIfNeeded()
         let footerViewHeight = footerButtonsView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
         stackHeight += footerViewHeight
-        
         let alertHeight = stackHeight + model.config.containerConfig.componentsInsets.top + model.config.containerConfig.componentsInsets.bottom
         let maxAlertHeight = containerView.frame.height * (CGFloat(model.config.containerConfig.maxAlertHeightIntPercentage) / 100.0)
         
@@ -397,20 +455,10 @@ extension AlertScreenViewController {
         self.view.layoutIfNeeded()
     }
     
-    private func showView() {
+    func showView() {
         self.model?.config.presentableService.showView(
             backgroundView: self.containerView,
             alertView: self.alertView
-        )
-    }
-    
-    func hideView(_ finished: (() -> Void)? = nil) {
-        self.model?.config.presentableService.hideView(
-            backgroundView: self.containerView,
-            alertView: self.alertView,
-            finished: {
-                finished?()
-            }
         )
     }
 }
