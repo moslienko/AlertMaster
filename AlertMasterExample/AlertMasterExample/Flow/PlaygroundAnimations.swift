@@ -24,7 +24,7 @@ class PlaygroundAnimations {
             }
         }
 
-        public func hideView(backgroundView: UIView, alertView: UIView, finished: (() -> Void)?) {
+        func hideView(backgroundView: UIView, alertView: UIView, finished: (() -> Void)?) {
             UIView.animate(withDuration: 0.35, animations: {
                 backgroundView.alpha = 0.0
                 alertView.transform = CGAffineTransform(rotationAngle: .pi / 2)
