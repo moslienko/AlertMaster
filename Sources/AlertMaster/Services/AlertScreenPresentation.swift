@@ -7,11 +7,22 @@
 
 import UIKit
 
+/// A protocol that allows you to customize the animations of the appearance and closing of the alert.
 public protocol AlertScreenPresentable {
+    /// Animate the appearance of the alert.
+    /// - Parameters:
+    ///   - backgroundView: The alert background view.
+    ///   - alertView: The alert container, which contains all its components directly.
     func showView(backgroundView: UIView, alertView: UIView)
+    /// Animate the closing of the alert.
+    /// - Parameters:
+    ///   - backgroundView: The alert background view.
+    ///   - alertView: The alert container, which contains all its components directly.
+    ///   - finished: An optional closure that is called after the animation completes.
     func hideView(backgroundView: UIView, alertView: UIView, finished: (() -> Void)?)
 }
 
+/// An out-of-the-box animation that allows you to customize the appearance and closing animations of the alert.
 public class AlertScreenPresentation: AlertScreenPresentable {
     
     public init() {}

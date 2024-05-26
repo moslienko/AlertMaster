@@ -70,7 +70,7 @@ class RotatePresentable: AlertScreenPresentable {
 }
 ```
 
-Then set it in the config
+Then set it in the config:
 
  ```swift
 var alertConfig = AlertConfig()
