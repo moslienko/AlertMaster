@@ -12,6 +12,7 @@ import UIKit
 public struct AlertCloseButtonConfig {
     public var isShowCloseButton: Bool
     public var icon: UIImage
+    public var tintColor: UIColor
     public var size: CGSize
     public var position: Position
     
@@ -32,11 +33,13 @@ public struct AlertCloseButtonConfig {
     public init(
         isShowCloseButton: Bool = true,
         icon: UIImage = AlertCloseButtonConfig.defaultIcon ?? UIImage(),
-        size: CGSize = CGSize(width: 44.0, height: 44.0),
+        tintColor: UIColor = .black,
+        size: CGSize = CGSize(width: 40.0, height: 40.0),
         position: Position = .right(inset: PositionInset(top: 16.0, side: -16.0))
     ) {
         self.isShowCloseButton = isShowCloseButton
         self.icon = icon
+        self.tintColor = tintColor
         self.size = size
         self.position = position
     }
