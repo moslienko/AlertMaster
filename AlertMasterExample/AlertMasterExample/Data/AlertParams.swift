@@ -120,4 +120,30 @@ enum AlertParams {
             }
         }
     }
+    
+    enum ComponentsContent: Int, CaseIterable, AlertParamsSegment {
+        case variantOne = 0
+        case variantTwo = 1
+        case textField = 2
+        case textView = 3
+        case datePicker = 4
+
+        static var id: Int = 106
+        static var groupName: String = "Components"
+        
+        var fieldName: String {
+            switch self {
+            case .variantOne:
+                return "#1"
+            case .variantTwo:
+                return "#2"
+            case .textField:
+                return "Text field"
+            case .textView:
+                return "Text view"
+            case .datePicker:
+                return "Date picker"
+            }
+        }
+    }
 }

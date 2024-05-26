@@ -48,9 +48,12 @@ private extension PlaygroundViewController {
         stackView.addArrangedSubview(self.label(text: AlertParams.CloseButtonContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.CloseButtonContent.allCases.map({ $0.fieldName }), selectedIndex: 1, id: AlertParams.CloseButtonContent.id))
         
+        stackView.addArrangedSubview(self.label(text: AlertParams.ComponentsContent.groupName))
+        stackView.addArrangedSubview(self.segment(items: AlertParams.ComponentsContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ComponentsContent.id))
+        
+
         stackView.addArrangedSubview(self.label(text: AlertParams.ActionButtonsContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.ActionButtonsContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ActionButtonsContent.id))
-        
         
         stackView.addArrangedSubview(self.label(text: AlertParams.AnimationContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.AnimationContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.AnimationContent.id))
@@ -169,6 +172,11 @@ private extension PlaygroundViewController {
             case .rotate:
                 self.viewModel.alertConfig.presentableService = PlaygroundAnimations.RotatePresentable()
             }
+        case AlertParams.ComponentsContent.id:
+            guard let val = AlertParams.ComponentsContent(rawValue: sender.selectedSegmentIndex) else {
+                return
+            }
+            viewModel.componentsContent = val
         default:
             break
         }
@@ -196,21 +204,39 @@ private extension PlaygroundViewController {
             $0.textAlignment = .center
         })
         let textViewStyle: DecorateWrapper<UITextView> = .wrap(style: {
-            $0.textAlignment = .center
+            $0.textAlignment = .left
+        })
+        let textViewEditedStyle: DecorateWrapper<UITextView> = .wrap(style: {
+            $0.textAlignment = .left
+            $0.font = .systemFont(ofSize: 15, weight: .regular)
+            $0.layer.cornerRadius = 15
+            $0.layer.borderColor = UIColor(hex: "097969").cgColor
+            $0.layer.borderWidth = 1.5
+            $0.tintColor = UIColor(hex: "097969")
+            $0.textContainerInset = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
         })
         
+        let textFieldStyle: DecorateWrapper<UITextField> = .wrap(style: {
+            $0.textAlignment = .left
+            $0.font = .systemFont(ofSize: 16, weight: .regular)
+            $0.borderStyle = .roundedRect
+            $0.placeholder = "Name"
+        })
+        let datePickerStyle: DecorateWrapper<UIDatePicker> = .wrap(style: {
+            $0.datePickerMode = .date
+            if #available(iOS 13.4, *) {
+                $0.preferredDatePickerStyle = .wheels
+            }
+        })
+
         let alert = AlertMasterService(
-            components: [
-                .image(UIImage(named: "cube-transparent")!, height: 100),
-                .text(value: "Текстовый компонент!", style: headerStyle),
-                .textView(value: attributedString, style: textViewStyle)
-            ],
+            components: [],
             buttonsLayout: .none
         )
-
+                
         let buttons = self.createButtonsList(count: 3, prefix: "")
         buttons.forEach({
-            $0.action = {
+            $0.addAction {
                 alert.dismiss()
             }
         })
@@ -223,21 +249,21 @@ private extension PlaygroundViewController {
         case .manual:
             let buttonsOne = self.createButtonsList(count: 2, prefix: "(0)")
             buttons.forEach({
-                $0.action = {
+                $0.addAction {
                     alert.dismiss()
                 }
             })
             
             let buttonsTwo = self.createButtonsList(count: 2, prefix: "(1)")
             buttons.forEach({
-                $0.action = {
+                $0.addAction {
                     alert.dismiss()
                 }
             })
             
             let buttonsThree = self.createButtonsList(count: 3, prefix: "(2)")
             buttons.forEach({
-                $0.action = {
+                $0.addAction {
                     alert.dismiss()
                 }
             })
@@ -253,6 +279,68 @@ private extension PlaygroundViewController {
             alert.buttonsLayout = .none
         }
         
+        let sendFeedbackButton = AppButton()
+
+        if viewModel.componentsContent == .textView {
+            sendFeedbackButton.setTitle("Send", for: [])
+            sendFeedbackButton.layer.cornerRadius = 15
+            sendFeedbackButton.regularStyle = .wrap(style: {
+                $0.backgroundColor = UIColor(hex: "097969")
+            })
+            sendFeedbackButton.highlightedStyle = .wrap(style: {
+                $0.backgroundColor = UIColor(hex: "097969").withAlphaComponent(0.7)
+            })
+            sendFeedbackButton.disabledStyle = .wrap(style: {
+                $0.backgroundColor = UIColor(hex: "097969").withAlphaComponent(0.3)
+            })
+            sendFeedbackButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
+            sendFeedbackButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+            sendFeedbackButton.isEnabled = false
+            sendFeedbackButton.addAction {
+                alert.dismiss()
+            }
+            
+            alert.buttonsLayout = .auto(buttons: [sendFeedbackButton], position: .horizontal)
+        }
+        
+        var components: [AlertComponents] {
+            switch viewModel.componentsContent {
+            case .variantOne:
+                let imageView = UIImageView(image: UIImage(systemName: "bolt.shield"))
+                imageView.tintColor = .systemRed
+                imageView.contentMode = .scaleAspectFit
+                
+                return [
+                    .image(imageView, height: 64),
+                    .text(value: "Important headline", style: headerStyle),
+                    .textView(value: attributedString, style: textViewStyle)
+                ]
+            case .variantTwo:
+                return []
+            case .textField:
+                return [
+                    .text(value: "What is your name?", style: headerStyle),
+                    .textField(value: "", style: textFieldStyle, height: 44, callback: { _ in
+                        
+                    })
+                ]
+            case .textView:
+                return [
+                    .text(value: "Leave your feedback", style: headerStyle),
+                    .editedTextView(value: "", style: textViewEditedStyle, height: 140, callback: { text in
+                        sendFeedbackButton.isEnabled = !(text ?? "").isEmpty
+                    })
+                ]
+            case .datePicker:
+                return [
+                    .text(value: "Select date of birth", style: headerStyle),
+                    .timePicker(date: Date(), style: datePickerStyle, height: AlertDatePicker.HeightConstant.wheel.rawValue, callback: { _ in
+                    })
+                ]
+            }
+        }
+        alert.components = components
+        
         alert.didDismissButtonTapped = {
             print("Dismiss btn tapped")
         }
@@ -260,13 +348,20 @@ private extension PlaygroundViewController {
         alert.show(in: self, with: viewModel.alertConfig)
     }
     
-    private func createButtonsList(count: Int, prefix: String) -> [AlertActionButton] {
-        var buttons: [AlertActionButton] = []
+    private func createButtonsList(count: Int, prefix: String) -> [AppButton] {
+        var buttons: [AppButton] = []
 
         for i in 0...count - 1 {
-            let button = AlertActionButton()
-            button.title = "\(prefix) Button \(i)"
-            button.cornerRadius = 15
+            let button = AppButton()
+            button.setTitle("\(prefix) Button \(i)", for: [])
+            button.layer.cornerRadius = 15
+            button.regularStyle = .wrap(style: {
+                $0.backgroundColor = .systemBlue
+            })
+            button.highlightedStyle = .wrap(style: {
+                $0.backgroundColor = .systemBlue.withAlphaComponent(0.7)
+            })
+            button.titleLabel?.font = .boldSystemFont(ofSize: 16)
             button.heightAnchor.constraint(equalToConstant: 44).isActive = true
             buttons += [button]
         }

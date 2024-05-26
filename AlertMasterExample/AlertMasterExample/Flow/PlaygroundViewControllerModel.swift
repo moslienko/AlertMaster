@@ -14,4 +14,5 @@ class PlaygroundViewControllerModel {
     var alertConfig = AlertConfig()
     
     var buttonsParam: AlertParams.ActionButtonsContent = .horizontal
+    var componentsContent: AlertParams.ComponentsContent = .variantOne
 }
