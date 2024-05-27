@@ -370,11 +370,13 @@ private extension AlertScreenViewController {
         var contentInset = self.contentStackView.scrollView.contentInset
         contentInset.bottom = keyboardSize.height
         self.contentStackView.scrollView.contentInset = contentInset
+        self.contentStackView.scrollView.isScrollEnabled = true
     }
     
     @objc
     func keyboardWillHide(notification: Notification) {
         self.contentStackView.scrollView.contentInset = .zero
+        self.setAlertScroll()
     }
 }
 
@@ -442,19 +444,27 @@ private extension AlertScreenViewController {
         footerButtonsView.layoutIfNeeded()
         let footerViewHeight = footerButtonsView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
         stackHeight += footerViewHeight
+        self.contentStackViewHeightConstraint?.constant = stackHeight
+        self.setAlertScroll()
+        
+        self.view.layoutIfNeeded()
+    }
+    
+    func setAlertScroll() {
+        guard let stackHeight = self.contentStackViewHeightConstraint?.constant,
+              let model = self.model else {
+            return
+        }
+        
         let alertHeight = stackHeight + model.config.containerConfig.componentsInsets.top + model.config.containerConfig.componentsInsets.bottom
         let maxAlertHeight = containerView.frame.height * (CGFloat(model.config.containerConfig.maxAlertHeightIntPercentage) / 100.0)
         
         if alertHeight > maxAlertHeight {
-            stackHeight = maxAlertHeight
+            self.contentStackViewHeightConstraint?.constant = maxAlertHeight
             self.contentStackView.scrollView.isScrollEnabled = true
         } else {
             self.contentStackView.scrollView.isScrollEnabled = false
         }
-        
-        self.contentStackViewHeightConstraint?.constant = stackHeight
-        
-        self.view.layoutIfNeeded()
     }
     
     func showView() {
