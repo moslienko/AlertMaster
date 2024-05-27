@@ -11,6 +11,7 @@ let package = Package(
             targets: ["AlertMaster"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
         .package(url: "https://github.com/moslienko/AppViewUtilits.git", from: "1.2.5")
     ],
     targets: [

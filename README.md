@@ -27,6 +27,17 @@ UIKit library for creating fully configurable alert screens
   <img src="https://moslienko.github.io/Assets/AlertMaster/feedback.png" width="230" />
 </p>
 
+## Table of Contents
+
+* [Installation](#installation)
+* [Usage](uUsage)
+  * [Components](#components)
+  * [Buttons](#buttons)
+  * [Styling](#styling)
+  * [Example](#example-of-creating-an-alert)
+  * [Config](#config)
+  * [Animation](#animation-of-screen-appearance-and-closing)
+
 ## Example
 
 The example application is the best way to see `AlertMaster` in action. Simply open the `AlertMasterExample.xcodeproj` and run the `AlertMasterExample` scheme.

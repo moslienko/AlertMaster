@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// View model for alert vc
 public class AlertScreenViewModel {
     /// The main alert service instance.
     public var alert: AlertMasterService

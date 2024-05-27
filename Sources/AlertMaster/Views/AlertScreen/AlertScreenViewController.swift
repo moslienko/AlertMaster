@@ -8,6 +8,7 @@
 import AppViewUtilits
 import UIKit
 
+/// Alert vc
 public class AlertScreenViewController: UIViewController {
     
     // MARK: - UI components
