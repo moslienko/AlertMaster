@@ -8,11 +8,15 @@
 import UIKit
 
 public class AlertScreenViewModel {
+    /// The main alert service instance.
     public var alert: AlertMasterService
+    /// The configuration object.
     public var config: AlertConfig
-    
-    var didDismissButtonTapped: (() -> Void)?
-    
+        
+    /// Initializes a new instance of the alert view model.
+    /// - Parameters:
+    ///   - alert: The main alert service instance.
+    ///   - config: The configuration object.
     public init(alert: AlertMasterService, config: AlertConfig) {
         self.alert = alert
         self.config = config

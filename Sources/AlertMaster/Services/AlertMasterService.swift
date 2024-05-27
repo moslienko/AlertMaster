@@ -41,9 +41,6 @@ public class AlertMasterService {
     ///   - config: Alert's configuration.
     public func show(in controller: UIViewController, with config: AlertConfig) {
         screen.model = AlertScreenViewModel(alert: self, config: config)
-        screen.model?.didDismissButtonTapped = {
-            self.didDismissButtonTapped?()
-        }
         screen.modalPresentationStyle = .overFullScreen
         
         DispatchQueue.main.async {

@@ -9,6 +9,7 @@ import UIKit
 
 public class FooterButtonsView: UIView {
     
+    /// The configuration for the buttons.
     var buttonsConfig = AlertButtonsConfig()
     
     // MARK: - Private properties
@@ -30,6 +31,10 @@ public class FooterButtonsView: UIView {
         setupView()
     }
     
+    /// Initializes a new instance of the alert footer view.
+    /// - Parameters:
+    ///   - frame: The frame rectangle for the view, measured in points.
+    ///   - buttonsConfig: The configuration for the buttons.
     init(frame: CGRect, buttonsConfig: AlertButtonsConfig) {
         self.buttonsConfig = buttonsConfig
         super.init(frame: frame)
@@ -46,10 +51,13 @@ public class FooterButtonsView: UIView {
 // MARK: - Public methods
 public extension FooterButtonsView {
     
+    /// Remove all button groups added to the view.
     func reset() {
         self.mainStackView.arrangedSubviews.forEach({ $0.removeFromSuperview() })
     }
     
+    /// Add a buttons groups to the view.
+    /// - Parameter groups: Buttons groups.
     func addCustomGroups(_ groups: [AlertButtonsGroup]) {
         groups.forEach({ group in
             switch group.position {
@@ -71,6 +79,10 @@ public extension FooterButtonsView {
         })
     }
     
+    /// Add a single button to the view.
+    /// - Parameters:
+    ///   - button: Button.
+    ///   - position: Button position in grid.
     func addCustomButton(_ button: UIButton, position: ButtonPosition) {
         switch position {
         case .horizontal:
@@ -99,6 +111,7 @@ public extension FooterButtonsView {
 // MARK: - Setup methods
 private extension FooterButtonsView {
     
+    /// Setup view constraints.
     func setupView() {
         addSubview(mainStackView)
         
@@ -110,6 +123,7 @@ private extension FooterButtonsView {
         ])
     }
     
+    /// Create new horizontal stack for buttons.
     func createNewHorizontalStack() {
         let horizontalStackView = UIStackView()
         
@@ -122,6 +136,7 @@ private extension FooterButtonsView {
         mainStackView.addArrangedSubview(horizontalStackView)
     }
     
+    /// Create new vertical stack for buttons.
     func createNewVerticalStack() {
         let horizontalStackView = UIStackView()
         

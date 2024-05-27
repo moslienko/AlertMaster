@@ -343,7 +343,7 @@ private extension AlertScreenViewController {
     @objc
     func closeButtonTapped(_ sender: UIButton) {
         self.hideView {
-            self.model?.didDismissButtonTapped?()
+            self.model?.alert.didDismissButtonTapped?()
             self.dismiss(animated: false, completion: nil)
         }
     }
@@ -351,7 +351,7 @@ private extension AlertScreenViewController {
     @objc
     func handleBackgroundContainerTap(_ sender: UITapGestureRecognizer) {
         self.hideView {
-            self.model?.didDismissButtonTapped?()
+            self.model?.alert.didDismissButtonTapped?()
             self.dismiss(animated: false, completion: nil)
         }
     }
@@ -381,6 +381,8 @@ private extension AlertScreenViewController {
 // MARK: - External module methods
 extension AlertScreenViewController {
     
+    /// Dismisses the alert and calls the optional completion handler after dismissal.
+    /// - Parameter finished: An optional closure to be executed after the alert is dismissed.
     func hideView(_ finished: (() -> Void)? = nil) {
         self.model?.config.presentableService.hideView(
             backgroundView: self.containerView,
