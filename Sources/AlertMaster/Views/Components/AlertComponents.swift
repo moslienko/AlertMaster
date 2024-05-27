@@ -18,6 +18,9 @@ public enum AlertComponents {
          timePicker(date: Date, style: DecorateWrapper<UIDatePicker>, height: CGFloat, callback: ((Date?) -> Void)?),
          custom(view: UIView, height: CGFloat)
     
+    /// Create UI component for alert.
+    /// - Parameter parentWidth: Width of the parent view of the container.
+    /// - Returns: View of component and its height.
     func createComponent(parentWidth: CGFloat) -> (UIView, CGFloat) {
         switch self {
         case let .text(value, style):
@@ -42,9 +45,9 @@ public enum AlertComponents {
             textView.apply(style)
             
             let font = value.attribute(.font, at: 0, effectiveRange: nil) as? UIFont ?? UIFont.systemFont(ofSize: 14)
-            let height = value.string.height(
+            let height = value.height(
                 withConstrainedWidth: parentWidth - textView.textContainerInset.left - textView.textContainerInset.right,
-                font: font
+                textView: textView
             )
             textView.translatesAutoresizingMaskIntoConstraints = false
             textView.heightAnchor.constraint(equalToConstant: height).isActive = true
@@ -83,7 +86,6 @@ public enum AlertComponents {
             let datePicker = AlertDatePicker()
             datePicker.date = date
             (datePicker as? UIDatePicker)?.apply(style)
-            datePicker.datePickerMode = .time
             datePicker.translatesAutoresizingMaskIntoConstraints = false
             datePicker.translatesAutoresizingMaskIntoConstraints = false
             datePicker.heightAnchor.constraint(equalToConstant: height).isActive = true
