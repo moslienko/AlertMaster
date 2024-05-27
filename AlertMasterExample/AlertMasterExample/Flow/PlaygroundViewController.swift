@@ -51,7 +51,7 @@ private extension PlaygroundViewController {
         stackView.addArrangedSubview(self.label(text: AlertParams.ComponentsContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.ComponentsContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ComponentsContent.id))
         
-
+        
         stackView.addArrangedSubview(self.label(text: AlertParams.ActionButtonsContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.ActionButtonsContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ActionButtonsContent.id))
         
@@ -185,18 +185,18 @@ private extension PlaygroundViewController {
     @objc
     func bigButtonTapped() {
         let text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-
+        
         let regularFont = UIFont.systemFont(ofSize: 14)
         let boldFont = UIFont.boldSystemFont(ofSize: 14)
-
+        
         let regularAttributes: [NSAttributedString.Key: Any] = [.font: regularFont, .foregroundColor: UIColor.black]
         let boldAttributes: [NSAttributedString.Key: Any] = [.font: boldFont, .foregroundColor: UIColor.black]
-
+        
         let attributedString = NSMutableAttributedString(string: text, attributes: regularAttributes)
-
+        
         let boldRange = (text as NSString).range(of: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
         attributedString.setAttributes(boldAttributes, range: boldRange)
-
+        
         let headerStyle: DecorateWrapper<UILabel> = .wrap(style: {
             $0.numberOfLines = 0
             $0.textColor = .black
@@ -228,12 +228,12 @@ private extension PlaygroundViewController {
                 $0.preferredDatePickerStyle = .wheels
             }
         })
-
+        
         let alert = AlertMasterService(
             components: [],
             buttonsLayout: .none
         )
-                
+        
         let buttons = self.createButtonsList(count: 3, prefix: "")
         buttons.forEach({
             $0.addAction {
@@ -248,21 +248,21 @@ private extension PlaygroundViewController {
             alert.buttonsLayout = .auto(buttons: buttons, position: .vertical)
         case .manual:
             let buttonsOne = self.createButtonsList(count: 2, prefix: "(0)")
-            buttons.forEach({
+            buttonsOne.forEach({
                 $0.addAction {
                     alert.dismiss()
                 }
             })
             
             let buttonsTwo = self.createButtonsList(count: 2, prefix: "(1)")
-            buttons.forEach({
+            buttonsTwo.forEach({
                 $0.addAction {
                     alert.dismiss()
                 }
             })
             
             let buttonsThree = self.createButtonsList(count: 3, prefix: "(2)")
-            buttons.forEach({
+            buttonsThree.forEach({
                 $0.addAction {
                     alert.dismiss()
                 }
@@ -280,7 +280,7 @@ private extension PlaygroundViewController {
         }
         
         let sendFeedbackButton = AppButton()
-
+        
         if viewModel.componentsContent == .textView {
             sendFeedbackButton.setTitle("Send", for: [])
             sendFeedbackButton.layer.cornerRadius = 15
@@ -350,7 +350,7 @@ private extension PlaygroundViewController {
     
     private func createButtonsList(count: Int, prefix: String) -> [AppButton] {
         var buttons: [AppButton] = []
-
+        
         for i in 0...count - 1 {
             let button = AppButton()
             button.setTitle("\(prefix) Button \(i)", for: [])
@@ -367,5 +367,127 @@ private extension PlaygroundViewController {
         }
         
         return buttons
+    }
+    
+    private func showTestableAlert() {
+        let text = "Fill a profile now to get access to all the incredible features of the app"
+        
+        let regularFont = UIFont.systemFont(ofSize: 14)
+        let boldFont = UIFont.boldSystemFont(ofSize: 14)
+        
+        let regularAttributes: [NSAttributedString.Key: Any] = [.font: regularFont, .foregroundColor: UIColor.black]
+        let boldAttributes: [NSAttributedString.Key: Any] = [.font: boldFont, .foregroundColor: UIColor.black]
+        
+        let attributedString = NSMutableAttributedString(string: text, attributes: regularAttributes)
+        
+        let boldRange = (text as NSString).range(of: "all the incredible features")
+        attributedString.setAttributes(boldAttributes, range: boldRange)
+        
+        let tintColor = UIColor(hex: "7F00FF")
+
+        let headerStyle: DecorateWrapper<UILabel> = .wrap(style: {
+            $0.numberOfLines = 0
+            $0.textColor = .black
+            $0.font = .systemFont(ofSize: 22, weight: .bold)
+            $0.textAlignment = .center
+        })
+        let subHeaderStyle: DecorateWrapper<UILabel> = .wrap(style: {
+            $0.numberOfLines = 0
+            $0.textColor = .black
+            $0.font = .systemFont(ofSize: 16, weight: .bold)
+            $0.textAlignment = .left
+        })
+        let textViewStyle: DecorateWrapper<UITextView> = .wrap(style: {
+            $0.textAlignment = .center
+        })
+        let textViewEditedStyle: DecorateWrapper<UITextView> = .wrap(style: {
+            $0.textAlignment = .left
+            $0.font = .systemFont(ofSize: 15, weight: .regular)
+            $0.layer.cornerRadius = 15
+            $0.layer.borderColor = tintColor.cgColor
+            $0.layer.borderWidth = 1.5
+            $0.tintColor = tintColor
+            $0.textContainerInset = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
+        })
+        
+        let textFieldStyle: DecorateWrapper<UITextField> = .wrap(style: {
+            $0.textAlignment = .left
+            $0.font = .systemFont(ofSize: 16, weight: .regular)
+            $0.borderStyle = .roundedRect
+            $0.tintColor = tintColor
+            $0.layer.cornerRadius = 15
+            $0.layer.borderColor = tintColor.cgColor
+            $0.layer.borderWidth = 1.5
+            $0.placeholder = "Name"
+        })
+
+        let alert = AlertMasterService(
+            components: [],
+            buttonsLayout: .none
+        )
+        
+        let applyButton = AppButton()
+        let cancelButton = AppButton()
+        applyButton.addAction {
+            alert.dismiss()
+        }
+        cancelButton.addAction {
+            alert.dismiss()
+        }
+        
+        applyButton.setTitle("Apply", for: [])
+        applyButton.setTitleColor(.white, for: [])
+        applyButton.layer.cornerRadius = 15
+        applyButton.regularStyle = .wrap(style: {
+            $0.backgroundColor = tintColor
+        })
+        applyButton.highlightedStyle = .wrap(style: {
+            $0.backgroundColor = tintColor.withAlphaComponent(0.7)
+        })
+        applyButton.disabledStyle = .wrap(style: {
+            $0.backgroundColor = tintColor.withAlphaComponent(0.3)
+        })
+        applyButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        applyButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        applyButton.isEnabled = false
+
+        cancelButton.setTitle("Cancel", for: [])
+        cancelButton.setTitleColor(tintColor, for: [])
+        cancelButton.layer.cornerRadius = 15
+        cancelButton.backgroundColor = .clear
+        cancelButton.layer.borderWidth = 1.5
+        cancelButton.regularStyle = .wrap(style: {
+            $0.layer.borderColor = tintColor.cgColor
+        })
+        cancelButton.highlightedStyle = .wrap(style: {
+            $0.layer.borderColor = tintColor.withAlphaComponent(0.7).cgColor
+        })
+        cancelButton.disabledStyle = .wrap(style: {
+            $0.layer.borderColor = tintColor.withAlphaComponent(0.3).cgColor
+        })
+        cancelButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        cancelButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        
+        alert.buttonsLayout = .auto(buttons: [cancelButton, applyButton], position: .horizontal)
+        
+        let imageView = UIImageView(image: UIImage(systemName: "person.circle"))
+        imageView.tintColor = tintColor
+        imageView.contentMode = .scaleAspectFit
+        
+        let components: [AlertComponents] = [
+            .image(imageView, height: 64),
+            .text(value: "Fill profile", style: headerStyle),
+            .textView(value: attributedString, style: textViewStyle),
+            .text(value: "What is your name?", style: subHeaderStyle),
+            .textField(value: "", style: textFieldStyle, height: 44, callback: { text in
+                applyButton.isEnabled = !(text ?? "").isEmpty
+            }),
+            .text(value: "Tell us briefly about yourself", style: subHeaderStyle),
+            .editedTextView(value: "", style: textViewEditedStyle, height: 80, callback: { _ in })
+        ]
+        
+        alert.components = components
+        
+        alert.show(in: self, with: viewModel.alertConfig)
     }
 }
