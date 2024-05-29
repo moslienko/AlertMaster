@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "AlertMaster",
+      platforms: [
+        .iOS(.v12)
+    ],
     products: [
         .library(
             name: "AlertMaster",
@@ -12,7 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
-        .package(url: "https://github.com/moslienko/AppViewUtilits.git", from: "1.2.5")
+        .package(url: "https://github.com/moslienko/AppViewUtilits.git", from: "1.2.6")
     ],
     targets: [
         .target(
