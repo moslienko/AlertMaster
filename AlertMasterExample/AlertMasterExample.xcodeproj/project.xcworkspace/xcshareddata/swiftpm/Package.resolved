@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moslienko/AppViewUtilits.git",
       "state" : {
-        "revision" : "7869db7c86ea1278b34c45b17777089c41959b4c",
-        "version" : "1.2.5"
+        "revision" : "e9a32302e27c2890033c7e5a464bd581a652d9c3",
+        "version" : "1.2.6"
       }
     }
   ],
