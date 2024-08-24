@@ -114,6 +114,9 @@ public class AlertScreenViewController: UIViewController {
     private var closeButtonTopConstraint: NSLayoutConstraint?
     private var closeButtonSideConstraint: NSLayoutConstraint?
     private var contentStackViewHeightConstraint: NSLayoutConstraint?
+    private var alertViewTopConstraint: NSLayoutConstraint?
+    private var alertViewCenterYConstraint: NSLayoutConstraint?
+    private var alertViewBottomConstraint: NSLayoutConstraint?
     
     // MARK: - Public properties
     public var model: AlertScreenViewModel?
@@ -337,17 +340,17 @@ private extension AlertScreenViewController {
         
         switch model.config.containerConfig.containerPosition {
         case let .top(inset):
-            constraints += [
-                alertView.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: inset)
-            ]
+            let alertViewTopConstraint = alertView.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: inset)
+            constraints += [alertViewTopConstraint]
+            self.alertViewTopConstraint = alertViewTopConstraint
         case let .center(inset):
-            constraints += [
-                alertView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: inset)
-            ]
+            let alertViewCenterYConstraint = alertView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: inset)
+            constraints += [alertViewCenterYConstraint]
+            self.alertViewCenterYConstraint = alertViewCenterYConstraint
         case let .bottom(inset):
-            constraints += [
-                alertView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: inset)
-            ]
+            let alertViewBottomConstraint = alertView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: inset)
+            constraints += [alertViewBottomConstraint]
+            self.alertViewBottomConstraint = alertViewBottomConstraint
         }
     }
 }
@@ -378,20 +381,63 @@ private extension AlertScreenViewController {
     
     @objc
     func keyboardWillShow(notification: Notification) {
-        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+        guard let model = self.model,
+              let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
             return
         }
         
-        var contentInset = self.contentStackView.scrollView.contentInset
-        contentInset.bottom = keyboardSize.height
-        self.contentStackView.scrollView.contentInset = contentInset
-        self.contentStackView.scrollView.isScrollEnabled = true
+        if self.contentStackView.scrollView.isScrollEnabled {
+            var contentInset = self.contentStackView.scrollView.contentInset
+            contentInset.bottom = keyboardSize.height
+            self.contentStackView.scrollView.contentInset = contentInset
+        }
+        
+        switch model.config.containerConfig.containerPosition {
+        case let .top(inset):
+            break
+        case let .center(inset):
+            let keyboardHeight = keyboardSize.height
+            let alertViewMaxY = alertView.frame.maxY
+            let viewHeight = view.frame.height
+            
+            if alertViewMaxY > viewHeight - keyboardHeight {
+                let offset = alertViewMaxY - (viewHeight - keyboardHeight)
+                alertViewCenterYConstraint?.constant = (-offset / 2) - inset - 16
+                UIView.animate(withDuration: 0.3) {
+                    self.view.layoutIfNeeded()
+                }
+            }
+        case let .bottom(inset):
+            alertViewBottomConstraint?.constant = inset - keyboardSize.height
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            }
+        }
     }
     
     @objc
     func keyboardWillHide(notification: Notification) {
         self.contentStackView.scrollView.contentInset = .zero
         self.setAlertScroll()
+        
+        guard let model = self.model,
+              let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+        switch model.config.containerConfig.containerPosition {
+        case let .top(inset):
+            break
+        case let .center(inset):
+            alertViewCenterYConstraint?.constant = inset
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            }
+        case let .bottom(inset):
+            alertViewBottomConstraint?.constant = inset
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded()
+            }
+        }
     }
 }
 
