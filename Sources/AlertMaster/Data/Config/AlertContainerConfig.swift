@@ -12,6 +12,8 @@ import UIKit
 public struct AlertContainerConfig {
     /// The maximum height of the alert container as a percentage of the screen height.
     public var maxAlertHeightIntPercentage: Float
+    /// The alert position on the screen.
+    public var containerPosition: AlertPosition
     /// The insets for the container.
     public var containerInsets: AlertContainerConfig.SideInset
     /// The insets for the components within the container.
@@ -70,6 +72,7 @@ public struct AlertContainerConfig {
     /// Initializes a new `AlertContainerConfig` instance with the specified configuration options.
     /// - Parameters:
     ///   - maxAlertHeightIntPercentage: The maximum height of the alert container as a percentage of the screen height.
+    ///   - containerPosition: The alert position on the screen.
     ///   - containerInsets: The insets for the container.
     ///   - componentsInsets: The insets for the components within the container.
     ///   - componentsSpacing: The spacing between components within the container.
@@ -81,6 +84,7 @@ public struct AlertContainerConfig {
     ///   - shadowParams: he parameters for the shadow of the container.
     public init(
         maxAlertHeightIntPercentage: Float = 66.0,
+        containerPosition: AlertPosition = .center(inset: 0.0),
         containerInsets: AlertContainerConfig.SideInset = SideInset(left: 16.0, right: -16.0),
         componentsInsets: UIEdgeInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: -16.0, right: -16.0),
         componentsSpacing: CGFloat = 8.0,
@@ -92,6 +96,7 @@ public struct AlertContainerConfig {
         shadowParams: AlertContainerConfig.ShadowParams? = nil
     ) {
         self.maxAlertHeightIntPercentage = maxAlertHeightIntPercentage
+        self.containerPosition = containerPosition
         self.containerInsets = containerInsets
         self.componentsInsets = componentsInsets
         self.componentsSpacing = componentsSpacing

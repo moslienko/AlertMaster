@@ -325,7 +325,6 @@ private extension AlertScreenViewController {
             backgroundTouchView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             alertView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            alertView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             alertView.leadingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.leadingAnchor, constant: model.config.containerConfig.containerInsets.left),
             alertView.trailingAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.trailingAnchor, constant: model.config.containerConfig.containerInsets.right),
             
@@ -335,6 +334,21 @@ private extension AlertScreenViewController {
             contentStackView.bottomAnchor.constraint(equalTo: alertView.bottomAnchor, constant: model.config.containerConfig.componentsInsets.bottom),
             contentStackViewHeightConstraint
         ]
+        
+        switch model.config.containerConfig.containerPosition {
+        case let .top(inset):
+            constraints += [
+                alertView.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: inset)
+            ]
+        case let .center(inset):
+            constraints += [
+                alertView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: inset)
+            ]
+        case let .bottom(inset):
+            constraints += [
+                alertView.bottomAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.bottomAnchor, constant: inset)
+            ]
+        }
     }
 }
 
