@@ -118,6 +118,8 @@ public class AlertScreenViewController: UIViewController {
     private var alertViewCenterYConstraint: NSLayoutConstraint?
     private var alertViewBottomConstraint: NSLayoutConstraint?
     
+    private var initialCenterY: CGFloat = 0
+    
     // MARK: - Public properties
     public var model: AlertScreenViewModel?
     
@@ -439,6 +441,89 @@ private extension AlertScreenViewController {
             }
         }
     }
+    
+    @objc
+    func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: view)
+        print("initialCenterY - \(initialCenterY), \(gesture.state), tr \(translation.y)")
+        
+        guard let model = self.model,
+              model.config.swipeConfig.isAllowSwipeForDismiss else {
+            return
+        }
+        
+        switch gesture.state {
+        case .began, .changed:
+            switch model.config.containerConfig.containerPosition {
+            case .top:
+                // Limit the upside move to a small value for a bounce back
+                if translation.y < 0 {
+                    alertViewTopConstraint?.constant = translation.y
+                } else if translation.y < abs(model.config.swipeConfig.insetForBounceInOtherDir) {
+                    alertViewTopConstraint?.constant = translation.y
+                }
+            case .center:
+                // Limit the downward move to a small value for a bounce back
+                if translation.y > 0 {
+                    alertViewCenterYConstraint?.constant = translation.y
+                } else if translation.y > -abs(model.config.swipeConfig.insetForBounceInOtherDir) {
+                    alertViewCenterYConstraint?.constant = translation.y
+                }
+            case .bottom:
+                // Limit the downward move to a small value for a bounce back
+                if translation.y > 0 {
+                    alertViewBottomConstraint?.constant = translation.y
+                } else if translation.y > -abs(model.config.swipeConfig.insetForBounceInOtherDir) {
+                    alertViewBottomConstraint?.constant = translation.y
+                }
+            }
+            
+        case .ended, .cancelled:
+            switch model.config.containerConfig.containerPosition {
+            case let .top(inset):
+                // If enough of them swipe up
+                if let finalPosition = alertViewTopConstraint?.constant, finalPosition < -abs(model.config.swipeConfig.minInsetForDismiss) {
+                    self.hideView {
+                        self.model?.alert.didDismissButtonTapped?()
+                        self.dismiss(animated: false, completion: nil)
+                    }
+                } else {
+                    UIView.animate(withDuration: 0.3) {
+                        self.alertViewTopConstraint?.constant = inset
+                        self.view.layoutIfNeeded()
+                    }
+                }
+            case let .center(inset):
+                // If enough of them swipe down
+                if let finalPosition = alertViewCenterYConstraint?.constant, finalPosition > abs(model.config.swipeConfig.minInsetForDismiss) {
+                    self.hideView {
+                        self.model?.alert.didDismissButtonTapped?()
+                        self.dismiss(animated: false, completion: nil)
+                    }
+                } else {
+                    UIView.animate(withDuration: 0.3) {
+                        self.alertViewCenterYConstraint?.constant = inset
+                        self.view.layoutIfNeeded()
+                    }
+                }
+            case let .bottom(inset):
+                // If enough of them swipe down
+                if let finalPosition = alertViewBottomConstraint?.constant, finalPosition > abs(model.config.swipeConfig.minInsetForDismiss) {
+                    self.hideView {
+                        self.model?.alert.didDismissButtonTapped?()
+                        self.dismiss(animated: false, completion: nil)
+                    }
+                } else {
+                    UIView.animate(withDuration: 0.3) {
+                        self.alertViewBottomConstraint?.constant = inset
+                        self.view.layoutIfNeeded()
+                    }
+                }
+            }
+        default:
+            break
+        }
+    }
 }
 
 // MARK: - External module methods
@@ -507,6 +592,7 @@ private extension AlertScreenViewController {
         stackHeight += footerViewHeight
         self.contentStackViewHeightConstraint?.constant = stackHeight
         self.setAlertScroll()
+        self.addPanGesture()
         
         self.view.layoutIfNeeded()
     }
@@ -533,5 +619,10 @@ private extension AlertScreenViewController {
             backgroundView: self.containerView,
             alertView: self.alertView
         )
+    }
+    
+    func addPanGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        alertView.addGestureRecognizer(panGesture)
     }
 }
