@@ -45,12 +45,14 @@ private extension PlaygroundViewController {
         stackView.addArrangedSubview(self.label(text: AlertParams.ContainerContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.ContainerContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ContainerContent.id))
         
+        stackView.addArrangedSubview(self.label(text: AlertParams.PositionContent.groupName))
+        stackView.addArrangedSubview(self.segment(items: AlertParams.PositionContent.allCases.map({ $0.fieldName }), selectedIndex: 1, id: AlertParams.PositionContent.id))
+        
         stackView.addArrangedSubview(self.label(text: AlertParams.CloseButtonContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.CloseButtonContent.allCases.map({ $0.fieldName }), selectedIndex: 1, id: AlertParams.CloseButtonContent.id))
         
         stackView.addArrangedSubview(self.label(text: AlertParams.ComponentsContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.ComponentsContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ComponentsContent.id))
-        
         
         stackView.addArrangedSubview(self.label(text: AlertParams.ActionButtonsContent.groupName))
         stackView.addArrangedSubview(self.segment(items: AlertParams.ActionButtonsContent.allCases.map({ $0.fieldName }), selectedIndex: 0, id: AlertParams.ActionButtonsContent.id))
@@ -177,6 +179,18 @@ private extension PlaygroundViewController {
                 return
             }
             viewModel.componentsContent = val
+        case AlertParams.PositionContent.id:
+            guard let val = AlertParams.PositionContent(rawValue: sender.selectedSegmentIndex) else {
+                return
+            }
+            switch val {
+            case .top:
+                self.viewModel.alertConfig.containerConfig.containerPosition = .top(inset: 0)
+            case .center:
+                self.viewModel.alertConfig.containerConfig.containerPosition = .center(inset: 0)
+            case .bottom:
+                self.viewModel.alertConfig.containerConfig.containerPosition = .bottom(inset: 0)
+            }
         default:
             break
         }

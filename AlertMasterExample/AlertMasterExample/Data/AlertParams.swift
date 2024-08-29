@@ -146,4 +146,24 @@ enum AlertParams {
             }
         }
     }
+    
+    enum PositionContent: Int, CaseIterable, AlertParamsSegment {
+        case top = 0
+        case center = 1
+        case bottom = 2
+
+        static var id: Int = 107
+        static var groupName: String = "Position"
+        
+        var fieldName: String {
+            switch self {
+            case .top:
+                return "Top"
+            case .center:
+                return "Center"
+            case .bottom:
+                return "Bottom"
+            }
+        }
+    }
 }

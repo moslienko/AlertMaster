@@ -1,5 +1,5 @@
 <p align="center">
-   <img width="200" src="https://raw.githubusercontent.com/SvenTiigi/SwiftKit/gh-pages/readMeAssets/SwiftKitLogo.png" alt="AlertMaster Logo">
+   <img width="200" src="https://moslienko.github.io/Assets/AlertMaster/sdk.png" alt="AlertMaster Logo">
 </p>
 
 <p align="center">
@@ -51,7 +51,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/moslienko/AlertMaster.git", from: "1.0.0")
+    .package(url: "https://github.com/moslienko/AlertMaster.git", from: "1.1.0")
 ]
 ```
 
@@ -274,6 +274,8 @@ struct AlertConfig {
   public var containerConfig: AlertContainerConfig
   /// Config for alert action buttons.
   public var buttonsConfig: AlertButtonsConfig
+  /// Config for swiping on the alert container.
+  public var swipeConfig: AlertSwipeConfig
   /// Animation class that allows you to customize the appearance and closing animations of the alert.
   public var presentableService: AlertScreenPresentable
 }
@@ -324,6 +326,8 @@ struct AlertCloseButtonConfig {
 struct AlertContainerConfig {
   /// The maximum height of the alert container as a percentage of the screen height.
   public var maxAlertHeightIntPercentage: Float
+  /// The alert position on the screen.
+  public var containerPosition: AlertPosition
   /// The insets for the container.
   public var containerInsets: AlertContainerConfig.SideInset
   /// The insets for the components within the container.
@@ -357,6 +361,21 @@ struct AlertButtonsConfig {
   public var verticalGridSpacing: CGFloat
   /// The maximum number of buttons to display in a single row of the grid layout.
   public var countButtonsInOneRow: Int
+}
+```
+</details>
+
+<details>
+  <summary>AlertSwipeConfig</summary>
+  
+ ```swift
+public struct AlertSwipeConfig {
+  ///  A Boolean value indicating whether the alert can be closed by swiping on it.
+  public var isAllowSwipeForDismiss: Bool
+  /// Minimum distance at which you can swipe the alert to the other side (for the bounce effect).
+  public var insetForBounceInOtherDir: CGFloat
+  /// Minimum distance at which the alert will be closed.
+  public var minInsetForDismiss: CGFloat
 }
 ```
 </details>
